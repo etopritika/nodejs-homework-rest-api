@@ -1,25 +1,31 @@
-const express = require('express')
+const express = require("express");
+const router = express.Router();
+const {
+  getAll,
+  getById,
+  postContact,
+  deleteContact,
+  putContact,
+  updateFavorite,
+} = require("../../controllers/contacts");
+const { validateBody, isValidId } = require("../../middlewares");
+const { addSchema, addFavorite } = require("../../schemas/contacts");
 
-const router = express.Router()
+router.get("/", getAll);
 
-router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/:id", isValidId, getById);
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.post("/", validateBody(addSchema), postContact);
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.delete("/:id", isValidId, deleteContact);
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.put("/:id", isValidId, validateBody(addSchema), putContact);
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.patch(
+  "/:id/favorite",
+  isValidId,
+  validateBody(addFavorite),
+  updateFavorite
+);
 
-module.exports = router
+module.exports = router;
