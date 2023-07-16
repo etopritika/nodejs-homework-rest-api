@@ -1,8 +1,28 @@
-const Contact = require("../models/contact");
+const { Contact } = require("../models/contact");
 const { httpError, controllerWrapper } = require("../helpers/index");
 
 const getAll = async (req, res) => {
-  const result = await Contact.find();
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 20, favorite } = req.query;
+  const skip = (page - 1) * limit;
+  let result;
+
+  if (favorite) {
+    result = await Contact.find(
+      { owner, favorite: true },
+      "-createdAt -updatedAt",
+      {
+        skip,
+        limit,
+      }
+    );
+  } else {
+    result = await Contact.find({ owner }, "-createdAt -updatedAt", {
+      skip,
+      limit,
+    });
+  }
+
   if (!result) {
     throw httpError(404, "Not found");
   }
@@ -19,7 +39,8 @@ const getById = async (req, res) => {
 };
 
 const postContact = async (req, res) => {
-  const result = await Contact.create(req.body);
+  const { _id: owner } = req.user;
+  const result = await Contact.create({ ...req.body, owner });
   return res.status(201).json(result);
 };
 

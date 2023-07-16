@@ -8,21 +8,29 @@ const {
   putContact,
   updateFavorite,
 } = require("../../controllers/contacts");
-const { validateBody, isValidId } = require("../../middlewares");
-const { addSchema, addFavorite } = require("../../schemas/contacts");
+const { validateBody, isValidId, authenticate } = require("../../middlewares");
+const { schemas } = require("../../models/contact");
+const { addContacts, addFavorite } = schemas;
 
-router.get("/", getAll);
+router.get("/", authenticate, getAll);
 
-router.get("/:id", isValidId, getById);
+router.get("/:id", authenticate, isValidId, getById);
 
-router.post("/", validateBody(addSchema), postContact);
+router.post("/", authenticate, validateBody(addContacts), postContact);
 
-router.delete("/:id", isValidId, deleteContact);
+router.delete("/:id", authenticate, isValidId, deleteContact);
 
-router.put("/:id", isValidId, validateBody(addSchema), putContact);
+router.put(
+  "/:id",
+  authenticate,
+  isValidId,
+  validateBody(addContacts),
+  putContact
+);
 
 router.patch(
   "/:id/favorite",
+  authenticate,
   isValidId,
   validateBody(addFavorite),
   updateFavorite
