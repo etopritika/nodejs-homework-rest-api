@@ -8,11 +8,17 @@ const {
   logout,
   subscription,
   updateAvatar,
+  verifyEmail,
+  resendVerifyEmail,
 } = require("../../controllers/auth");
-const { authSchema } = require("../../models/user");
+const { authSchema, verifySchema } = require("../../models/user");
 const { validateBody, authenticate, upload } = require("../../middlewares");
 
 router.post("/register", validateBody(authSchema), register);
+
+router.get("/verify/:verificationToken", verifyEmail);
+
+router.post("/verify", validateBody(verifySchema), resendVerifyEmail);
 
 router.post("/login", validateBody(authSchema), login);
 
